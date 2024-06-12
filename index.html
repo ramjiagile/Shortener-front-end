@@ -3,9 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shortener</title>
+    <title>URL Shortener</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .center-box {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .input-group {
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .content {
+            display: flex;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        #dashboard {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        table.dataTable {
+            width: 100%;
+            margin: 0 auto;
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
-    <h1>welcome12</h1>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">MyApp</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="dashboard-link">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="urlshortener-link">URL Shortener</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <div class="content">
+        <div id="dashboard">
+            <h1>Dashboard</h1>
+            <table id="urlTable" class="display">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Short Key</th>
+                        <th>Action</th>
+                        <th>QR Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be appended here by jQuery -->
+                </tbody>
+            </table>
+        </div>
+        <div class="center-box" id="urlshortener">
+            <h1>URL Shortener</h1>
+            <div class="input-group mb-3">
+                <input type="text" id="url-input" class="form-control" placeholder="Enter URL" aria-label="URL">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" id="url-button" type="button">Generate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Sample data
+            var data = [
+                { id: 12, key: "hjfdhfjhfd" },
+                // Additional data can be added here
+            ];
+
+            // Initialize DataTable
+            var table = $('#urlTable').DataTable({
+                data: data,
+                columns: [
+                    { data: 'id' },
+                    { data: 'key' },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return '<button class="btn btn-sm btn-warning edit-btn">Edit</button>';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            return '<button class="btn btn-sm btn-info qrcode-btn">Generate</button>';
+                        }
+                    }
+                ]
+            });
+
+            $('#dashboard-link').click(function() {
+                $('.center-box').hide();
+                $('#dashboard').show();
+            });
+
+            $('#urlshortener-link').click(function() {
+                $('#dashboard').hide();
+                $('.center-box').show();
+            });
+
+            $('#url-button').click(function() {
+                var url = $('#url-input').val();
+                var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+                    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+                    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+                    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+
+                if (!urlPattern.test(url)) {
+                    alert("Please enter a valid URL.");
+                } else {
+                    $('#url-button').text('Copy URL');
+                    $('#url-button').removeClass('btn-primary').addClass('btn-success');
+                    $('#url-button').off('click').on('click', function() {
+                        navigator.clipboard.writeText(url).then(function() {
+                            alert('URL copied to clipboard.');
+                        }, function(err) {
+                            alert('Failed to copy URL: ', err);
+                        });
+                    });
+                }
+            });
+
+            // Show the dashboard by default
+            $('#dashboard-link').click();
+
+            // Handle Edit button click
+            $('#urlTable').on('click', '.edit-btn', function() {
+                var data = table.row($(this).parents('tr')).data();
+                alert('Edit button clicked for ID: ' + data.id);
+            });
+
+            // Handle QR Code button click
+            $('#urlTable').on('click', '.qrcode-btn', function() {
+                var data = table.row($(this).parents('tr')).data();
+                alert('QR Code button clicked for key: ' + data.key);
+            });
+        });
+    </script>
 </body>
 </html>

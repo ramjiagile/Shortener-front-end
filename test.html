@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get the current URL
+            var currentUrl = window.location.href;
+            // Find the position of 'index.html/'
+            var indexPosition = currentUrl.indexOf("index.html/");
+
+            if (indexPosition !== -1) {
+                // Extract the path after 'index.html/'
+                var extraPath = currentUrl.substring(indexPosition + "index.html/".length);
+
+                if (extraPath) {
+                    // Redirect to the index page with the path as a query parameter
+                    window.location.href = 'index.html?path=' + encodeURIComponent(extraPath);
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>Welcome to the Index Page</h1>
+    <p id="path"></p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get query parameters
+            var urlParams = new URLSearchParams(window.location.search);
+            var path = urlParams.get('path');
+
+            if (path) {
+                document.getElementById("path").textContent = "Path: " + path;
+            }
+        });
+    </script>
+</body>
+</html>
