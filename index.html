@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
-        body, html {
+        body,
+        html {
             height: 100%;
             margin: 0;
             display: flex;
@@ -15,6 +17,7 @@
             background: linear-gradient(135deg, #ff7e5f, #feb47b);
             font-family: Arial, Helvetica, sans-serif;
         }
+
         .center-box {
             display: none;
             justify-content: center;
@@ -25,13 +28,16 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         .input-group {
             width: 100%;
             max-width: 400px;
         }
+
         h1 {
             margin-bottom: 20px;
         }
+
         .content {
             display: flex;
             flex: 1;
@@ -39,6 +45,7 @@
             align-items: center;
             width: 100%;
         }
+
         #dashboard {
             display: flex;
             flex-direction: column;
@@ -49,17 +56,27 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         table.dataTable {
             width: 100%;
             margin: 0 auto;
             background-color: white;
         }
+
+        /* Style the QR code div */
+        .qrcode {
+            margin: 20px 0;
+        }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">MyApp</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -73,7 +90,7 @@
             </ul>
         </div>
     </nav>
-    
+
     <div class="content">
         <div id="dashboard">
             <h1>Dashboard</h1>
@@ -87,19 +104,41 @@
                     </tr>
                 </thead>
                 <tbody>
+
                     <!-- Data will be appended here by jQuery -->
                 </tbody>
             </table>
+            <!-- QR Code Modal -->
+
         </div>
         <div class="center-box" id="urlshortener">
             <h1>URL Shortener</h1>
             <div class="input-group mb-3">
-                <input type="text" id="url-input" class="form-control" placeholder="Enter URL" aria-label="URL">
-                <div class="input-group-append">
-                    <button class="btn btn-primary" id="url-button" type="button">Generate</button>
-                </div>
+                <form id="qr-form">
+                    <input type="text" id="url-input" class="form-control" placeholder="Enter URL" aria-label="URL">
+                    <div class="input-group-append">
+                        <button type="submit">Generate QR Code</button>
+                    </div>
+                </form>
             </div>
-            <div class="g-recaptcha" data-sitekey="6LcPsfYpAAAAAO1yELF3A6fjgLpkeoBb8CPav0Wv"></div>
+
+        </div>
+        <div class="modal fade" id="qrcodeModal" tabindex="-1" role="dialog" aria-labelledby="qrcodeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="qrcodeModalLabel">QR Code</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="qrcode-modal"></div>
+                    </div>
+                </div>
+                <div class="g-recaptcha" data-sitekey="6LcPsfYpAAAAAO1yELF3A6fjgLpkeoBb8CPav0Wv"></div>
+            </div>
         </div>
     </div>
 
@@ -109,10 +148,10 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Sample data
             var data = [
-                { id: 12, key: "hjfdhfjhfd" },
+                { id: 12, key: "www.google.com" },
                 // Additional data can be added here
             ];
 
@@ -124,37 +163,37 @@
                     { data: 'key' },
                     {
                         data: null,
-                        render: function(data, type, row) {
+                        render: function (data, type, row) {
                             return '<button class="btn btn-sm btn-warning edit-btn">Edit</button>';
                         }
                     },
                     {
                         data: null,
-                        render: function(data, type, row) {
+                        render: function (data, type, row) {
                             return '<button class="btn btn-sm btn-info qrcode-btn">Generate</button>';
                         }
                     }
                 ]
             });
 
-            $('#dashboard-link').click(function() {
+            $('#dashboard-link').click(function () {
                 $('.center-box').hide();
                 $('#dashboard').show();
             });
 
-            $('#urlshortener-link').click(function() {
+            $('#urlshortener-link').click(function () {
                 $('#dashboard').hide();
                 $('.center-box').show();
             });
 
-            $('#url-button').click(function() {
+            $('#url-button').click(function () {
                 var url = $('#url-input').val();
-                var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
-                    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-                    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-                    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+                var urlPattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+                    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|' + // domain name
+                    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 
                 if (!urlPattern.test(url)) {
                     alert("Please enter a valid URL.");
@@ -165,10 +204,10 @@
                     } else {
                         $('#url-button').text('Copy URL');
                         $('#url-button').removeClass('btn-primary').addClass('btn-success');
-                        $('#url-button').off('click').on('click', function() {
-                            navigator.clipboard.writeText(url).then(function() {
+                        $('#url-button').off('click').on('click', function () {
+                            navigator.clipboard.writeText(url).then(function () {
                                 alert('URL copied to clipboard.');
-                            }, function(err) {
+                            }, function (err) {
                                 alert('Failed to copy URL: ', err);
                             });
                         });
@@ -180,17 +219,65 @@
             $('#dashboard-link').click();
 
             // Handle Edit button click
-            $('#urlTable').on('click', '.edit-btn', function() {
+            $('#urlTable').on('click', '.edit-btn', function () {
                 var data = table.row($(this).parents('tr')).data();
                 alert('Edit button clicked for ID: ' + data.id);
             });
 
             // Handle QR Code button click
-            $('#urlTable').on('click', '.qrcode-btn', function() {
+            $('#urlTable').on('click', '.qrcode-btn', function () {
                 var data = table.row($(this).parents('tr')).data();
-                alert('QR Code button clicked for key: ' + data.key);
+                var key = data.key; // Get the key value
+                alert('QR Code button clicked for key: ' + key);
+                generateQRCode(key);
             });
+
+
+            $('#qrcodeModal').on('hidden.bs.modal', function () {
+                var qrcodeContainer = document.getElementById('qrcode-modal');
+                qrcodeContainer.innerHTML = ''; // Clear the QR code
+            });
+        });
+
+        function generateQRCode(text) {
+            var qrcodeContainer = document.getElementById('qrcode-modal');
+            qrcodeContainer.innerHTML = ''; // Clear previous QR code
+
+            // Create a new QR code instance
+            var qrcode = new QRCode(qrcodeContainer, {
+                text: text,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Show the modal
+            $('#qrcodeModal').modal('show');
+        }
+    </script>
+
+    <script>
+        // Script.js
+        // create a new QRCode instance
+        let qrcode = new QRCode(document.querySelector(".qrcode"));
+
+        // Get form and input elements
+        const form = document.getElementById('qr-form');
+        const inputText = document.getElementById('url-input');
+
+        // Handle form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = inputText.value.trim();
+            if (text === "") {
+                alert("Input Field Can not be blank!");
+            } else {
+                qrcode.makeCode(text);
+            }
         });
     </script>
 </body>
+
 </html>
