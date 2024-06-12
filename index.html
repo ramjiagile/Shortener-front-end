@@ -73,6 +73,10 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@8.0.0"></script>
+
+    
+    
 
 </head>
 
@@ -263,7 +267,7 @@
         }
     </script>
 
-    <script>
+    <!-- <script>
         // Script.js
         // create a new QRCode instance
         let qrcode = new QRCode(document.querySelector(".qrcode"));
@@ -282,8 +286,30 @@
                 qrcode.makeCode(text);
             }
         });
-    </script>
+    </script> -->
      <script src="script.js"></script>
+
+     <script>
+
+$(document).ready(function () {       
+
+
+const client = new window.Appwrite().database;
+console.log("testt",client)
+
+// client
+// .setEndpoint('https://cloud.appwrite.io/v1') // Your Appwrite Endpoint
+// .setProject('666929470005a01fd522'); // Your project ID
+
+// Initialize the Appwrite Database service
+console.log("fdhsdshgdsdgshgd client",client)
+const database = new Appwrite.Database(client);
+
+console.log("database",database)})
+
+ 
+    </script>
+
 </body>
 
 </html>
